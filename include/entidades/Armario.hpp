@@ -9,17 +9,17 @@
 class Armario
 {
 private:
-    std::string id;
+    int id;
     std::string localizacao;
     bool disponivel;
     std::vector<Livro *> livros;
 
 public:
     Armario() : id(0), localizacao(""), disponivel(true), livros() {};
-    Armario(const std::string &id, const std::string &localizacao, bool disponivel = true) : id(id), localizacao(localizacao), disponivel(disponivel), livros() {};
+    Armario(const int id, const std::string &localizacao, bool disponivel = true) : id(id), localizacao(localizacao), disponivel(disponivel), livros() {};
     ~Armario() = default;
 
-    std::string getId() const { return id; }
+    int getId() const { return id; }
     void setId(int id) { this->id = id; }
     std::string getLocalizacao() const { return localizacao; }
     void setLocalizacao(std::string localizacao) { this->localizacao = localizacao; }

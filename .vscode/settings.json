@@ -107,6 +107,7 @@
     "chrono": "cpp",
     "ctime": "cpp",
     "ratio": "cpp",
-    "optional": "cpp"
+    "optional": "cpp",
+    "thread": "cpp"
   }
 }
