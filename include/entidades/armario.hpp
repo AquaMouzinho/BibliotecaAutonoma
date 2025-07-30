@@ -28,7 +28,10 @@ public:
     std::vector<Livro *> getLivros() const { return livros; }
     void setLivros(std::vector<Livro *> livros) { this->livros = livros; }
 
-    bool getStatus() const;
+    bool Armario::getStatus() const
+    {
+        return disponivel;
+    }
 };
 
 #endif // ARMARIO_H

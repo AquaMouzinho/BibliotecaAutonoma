@@ -18,13 +18,21 @@ private:
     bool disponivel;
 
 public:
-    Livro(const std::string &isbn, const std::string &titulo,
-          const std::string &autor, const std::string &tagRFID,
-          Usuario *proprietario, Armario *armario, bool disponivel = true);
+    Livro::Livro(const std::string &isbn, const std::string &titulo,
+                 const std::string &autor, const std::string &tagRFID,
+                 Usuario *proprietario, Armario *armario, bool disponivel)
+        : isbn(isbn), titulo(titulo), autor(autor), tagRFID(tagRFID),
+          proprietario(proprietario), armario(armario), disponivel(disponivel) {}
 
-    Emprestimo *getHistoricoEmprestimos() const;
-    Armario *getLocalizacaoAtual() const;
-    Usuario *getProprietario() const;
+    Armario *Livro::getLocalizacaoAtual() const
+    {
+        return armario;
+    }
+
+    Usuario *Livro::getProprietario() const
+    {
+        return proprietario;
+    }
 
     std::string getIsbn() const { return this->isbn; };
     void setIsbn(std::string isbn) { this->isbn = isbn; };

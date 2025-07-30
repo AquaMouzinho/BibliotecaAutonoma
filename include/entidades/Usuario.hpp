@@ -16,8 +16,6 @@ private:
     std::string nome;
     std::string senha_hash;
     std::string role;
-
-    // Essas estruturas n sao daqui
     std::vector<Livro *> livrosDoados;
     std::vector<Emprestimo *> emprestimosAtivos;
     std::vector<Notificacao *> notificacoes;
@@ -26,15 +24,15 @@ protected:
     Usuario(int id, const std::string &matricula, const std::string &nome,
             const std::string &senha_hash, const std::string &role);
 
-    bool isAdmin() const;
     bool temEmprestimosVencidos() const;
 
-    std::vector<Livro *> getLivrosDoados() const;
-    std::vector<Emprestimo *> getEmprestimosAtivos() const;
-    std::vector<Notificacao *> getNotificacoes() const;
+    std::vector<Livro *> getLivrosDoados() const { return livrosDoados; };
+    std::vector<Emprestimo *> getEmprestimosAtivos() const { return emprestimosAtivos; };
 
-    void adicionarNotificacao(Notificacao *n);
+    std::vector<Notificacao *> getNotificacoes() const { return notificacoes; };
+    void setNotificacoes(std::vector<Notificacao *> notificacoes) { this->notificacoes = notificacoes; };
 
+    bool isAdmin() const { return this->role == "admin"; };
     int getId() const { return this->id; };
     void setId(int id) { this->id = id; };
     std::string getMatricula() const { return this->matricula; };

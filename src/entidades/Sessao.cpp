@@ -22,8 +22,3 @@ void Sessao::encerrar()
 {
     fim = std::chrono::system_clock::now();
 }
-
-void Sessao::setEstado(EstadoSessao *novoEstado)
-{
-    estadoAtual = novoEstado;
-}

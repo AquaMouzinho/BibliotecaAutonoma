@@ -26,10 +26,10 @@ private:
 public:
     Emprestimo(int id, Livro *livro, Usuario *usuario,
                std::chrono::system_clock::time_point dataInicio,
-               std::chrono::system_clock::time_point dataFim);
+               std::chrono::system_clock::time_point dataFim)
+        : id(id), livro(livro), usuario(usuario),
+          dataInicio(dataInicio), dataFim(dataFim), status(StatusEmprestimo::ATIVO) {}
 
-    bool estaEmAberto() const;
-    bool estaVencido() const;
     int calcularAtraso() const;
     void finalizar(std::chrono::system_clock::time_point dataDevolucao);
 
@@ -45,6 +45,8 @@ public:
     void setDataDevolucao(std::chrono::system_clock::time_point data_devolucao) { this->dataFim = data_devolucao; };
     StatusEmprestimo getStatus() const { return status; };
     void setStatus(StatusEmprestimo status) { this->status = status; };
+    bool estaEmAberto() const { return status == StatusEmprestimo::ATIVO; }
+    bool estaVencido() const { return status == StatusEmprestimo::ATRASO; }
 };
 
 #endif // EMPRESTIMO_H

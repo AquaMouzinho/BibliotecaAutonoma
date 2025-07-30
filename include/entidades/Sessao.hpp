@@ -31,7 +31,6 @@ public:
     void iniciar();
     void reiniciarTimeout();
     void encerrar();
-    void setEstado(EstadoSessao *novoEstado);
 
     int getId() const { return id; };
     void setId(int id) { this->id = id; };
@@ -40,6 +39,7 @@ public:
     Armario *getArmario() const { return armario; };
     void setArmario(Armario *armario) { this->armario = armario; };
     EstadoSessao *getEstado() const { return estadoAtual; };
+    void setEstado(EstadoSessao *novoEstado) { this->estadoAtual = novoEstado; }
     TipoSessao getTipo() const { return tipo; };
     void setTipo(TipoSessao tipo) { this->tipo = tipo; };
     std::chrono::system_clock::time_point getDataCriacao() const { return inicio; };

@@ -2,17 +2,6 @@
 
 using namespace std::chrono;
 
-Emprestimo::Emprestimo(int id, Livro *livro, Usuario *usuario,
-                       system_clock::time_point dataInicio,
-                       system_clock::time_point dataFim)
-    : id(id), livro(livro), usuario(usuario),
-      dataInicio(dataInicio), dataFim(dataFim), status(StatusEmprestimo::ATIVO) {}
-
-bool Emprestimo::estaEmAberto() const
-{
-    return status == StatusEmprestimo::ATIVO;
-}
-
 int Emprestimo::calcularAtraso() const
 {
     auto agora = system_clock::now();
