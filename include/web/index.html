@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Biblioteca Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #0A5517;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-box {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      height: 300px;
+      max-width: 400px;
+    }
+    .login-box img   {display: block;margin: 0 auto 1rem;max-height: 60px;}
+    .login-box h2    {text-align: center;margin-bottom: 1rem;color: #333;}
+    .login-box label {display: block;margin-bottom: 0.2rem;color: #333;font-size: 0.9rem;}
+    .login-box input,
+    .login-box select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 0.6rem;
+      background-color: #19882c;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .login-box button:hover {background-color: #7dc48a;}
+    .footer {text-align: center;margin-top: 1rem;font-size: 0.8rem;color: #999;}
+  </style>
+</head>
+<body>
+  <div class="login-box">
+		<h1 style="text-align: center;">IFPB</h1>
+    <form id="loginForm">
+      <label for="email">Usuário</label>
+      <input type="email" id="email" name="email" placeholder="Matricula" required>
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" placeholder="********" required>
+      <button type="submit">Entrar</button>
+    </form>
+    <div class="footer">© 2025 Biblioteca | Desenvolvimento: IFPB </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("loginForm");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("email").value.trim();
+        const senha = document.getElementById("senha").value.trim();
+        if (email === "admin@gmail.com" && senha === "admin") {
+          window.location.href = "./admin/pageadmin.html";
+        }
+        if (email === "user@gmail.com" && senha === "user") {
+          window.location.href = "./user/user.html";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

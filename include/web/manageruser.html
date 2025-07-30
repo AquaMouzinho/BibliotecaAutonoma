@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Área do Usuário - Biblioteca</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #19882c;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.4rem;
+      position: relative;
+    }
+
+    .modal-content {
+      margin-top: 0.5rem;
+    }
+
+    .modal-content a {
+      margin: 0 0.5rem;
+      text-decoration: none;
+    }
+
+    .confirm-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .confirm-btn:hover {
+      opacity: 0.9;
+    }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background-color: #ccc;
+    }
+
+    .top-grid div {
+      background-color: #ffffff;
+      padding: 1rem;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .top-grid div:hover {
+      background-color: #e0e0e0;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      background-color: #fff;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: flex-start;
+      align-content: flex-start;
+    }
+
+    .card {
+      background-color: #fdfdfd;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      width: 150px;
+      height: 280px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .card h3 {
+      font-size: 13px;
+      margin: 0 0 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header style="display:flex;justify-content:center;align-items:center;">
+    <div>
+Biblioteca autônoma - IFPB
+</div>
+    <div class="modal-content">
+      <a href="./user.html">
+        <button class="confirm-btn" style="background-color: #dc3545;">Voltar</button>
+      </a>
+    </div>
+  </header>
+
+  <div class="top-grid">
+    <div onclick="mostrarSecao('historico')">Meus Empréstimos</div>
+    <div style="display:flex;justify-content:center;align-items:center;" onclick="mostrarSecao('doacoes')">
+			<div>Doações</div>
+      <a href="./postuser.html">
+        <button class="confirm-btn" style="background-color: green;">Doar livro</button>
+      </a>
+		</div>
+    <div onclick="mostrarSecao('curtidos')">...</div>
+    <div onclick="mostrarSecao('outros')">Outros</div>
+  </div>
+
+  <div class="main-content" id="conteudo">
+    <div class="card">
+      <h3>Bem-vindo!</h3>
+      <p>Selecione uma das seções acima para visualizar seus livros.</p>
+    </div>
+  </div>
+
+  <script>
+    const conteudo = document.getElementById("conteudo");
+
+    const dados = {
+      historico: [
+        {
+          titulo: "Dom Casmurro",
+          data: "10/06/2025",
+          capa: "https://www.livropedia.com/imagens/livro-desenvolvimento-humano.jpg"
+        },
+        {
+          titulo: "O Cortiço",
+          data: "22/07/2025",
+          capa: "https://www.livropedia.com/imagens/livro-desenvolvimento-humano.jpg"
+        },
+        {
+          titulo: "Capitães da Areia",
+          data: "05/05/2025",
+          capa: "https://www.livropedia.com/imagens/livro-desenvolvimento-humano.jpg"
+        }
+      ],
+      doacoes: [
+        {
+          titulo: "Vidas Secas",
+          data: "01/07/2025",
+          capa: "https://www.livropedia.com/imagens/livro-desenvolvimento-humano.jpg"
+        },
+        {
+          titulo: "A Hora da Estrela",
+          data: "20/06/2025",
+          capa: "https://www.livropedia.com/imagens/livro-desenvolvimento-humano.jpg"
+        }
+      ],
+      curtidos: [
+        {
+          titulo: "Grande Sertão: Veredas",
+          capa: "https://www.livropedia.com/imagens/livro-desenvolvimento-humano.jpg"
+        },
+        {
+          titulo: "Memórias Póstumas de Brás Cubas",
+          capa: "https://www.livropedia.com/imagens/livro-desenvolvimento-humano.jpg"
+        }
+      ],
+      outros: []
+    };
+
+    function mostrarSecao(secao) {
+      conteudo.innerHTML = "";
+
+      if (dados[secao].length === 0) {
+        conteudo.innerHTML = `<div class="card"><p>Nenhum item encontrado em ${secao}.</p></div>`;
+        return;
+      }
+
+      dados[secao].forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${item.capa || 'https://via.placeholder.com/120x160?text=Sem+Capa'}" alt="Capa do livro">
+          <h3>${item.titulo}</h3>
+          <p>${item.data ? "📅 " + item.data : "📚 Sem data"}</p>
+        `;
+        conteudo.appendChild(card);
+      });
+    }
+  </script>
+
+</body>
+</html>
+
