@@ -4,21 +4,31 @@
 #include <string>
 #include <vector>
 
-class Livro; // Declaração antecipada
+#include "Livro.hpp"
 
-class Armario {
+class Armario
+{
 private:
-    std::string id;                    
-    std::string localizacao;          
-    bool disponivel;                   
-    std::vector<Livro*> livros;
+    std::string id;
+    std::string localizacao;
+    bool disponivel;
+    std::vector<Livro *> livros;
 
 public:
+    Armario() : id(0), localizacao(""), disponivel(true), livros() {};
+    Armario(const std::string &id, const std::string &localizacao, bool disponivel = true) : id(id), localizacao(localizacao), disponivel(disponivel), livros() {};
+    ~Armario() = default;
 
-    Armario(const std::string& id, const std::string& localizacao, bool disponivel = true);
+    std::string getId() const { return id; }
+    void setId(int id) { this->id = id; }
+    std::string getLocalizacao() const { return localizacao; }
+    void setLocalizacao(std::string localizacao) { this->localizacao = localizacao; }
+    bool isDisponivel() const { return disponivel; }
+    void setDisponivel(bool disponivel) { this->disponivel = disponivel; }
+    std::vector<Livro *> getLivros() const { return livros; }
+    void setLivros(std::vector<Livro *> livros) { this->livros = livros; }
 
     bool getStatus() const;
-
 };
 
 #endif // ARMARIO_H

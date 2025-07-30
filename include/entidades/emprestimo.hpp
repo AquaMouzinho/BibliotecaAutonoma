@@ -3,33 +3,48 @@
 
 #include <chrono>
 
-class Livro;
-class Usuario;
+#include "Livro.hpp"
+#include "Usuario.hpp"
 
-enum class StatusEmprestimo {
+enum class StatusEmprestimo
+{
     ATIVO,
     CONCLUIDO,
     ATRASO
 };
 
-class Emprestimo {
+class Emprestimo
+{
 private:
     int id;
-    Livro* livro;
-    Usuario* usuario;
+    Livro *livro;
+    Usuario *usuario;
     std::chrono::system_clock::time_point dataInicio;
     std::chrono::system_clock::time_point dataFim;
     StatusEmprestimo status;
 
 public:
-    Emprestimo(int id, Livro* livro, Usuario* usuario,
+    Emprestimo(int id, Livro *livro, Usuario *usuario,
                std::chrono::system_clock::time_point dataInicio,
                std::chrono::system_clock::time_point dataFim);
 
     bool estaEmAberto() const;
+    bool estaVencido() const;
     int calcularAtraso() const;
     void finalizar(std::chrono::system_clock::time_point dataDevolucao);
 
+    int getId() const { return id; };
+    void setId(int id) { this->id = id; };
+    Livro *getLivro() const { return livro; };
+    void setLivro(Livro *livro) { this->livro = livro; };
+    Usuario *getUsuario() const { return usuario; };
+    void setUsuario(Usuario *usuario) { this->usuario = usuario; };
+    std::chrono::system_clock::time_point getDataEmprestimo() const { return dataInicio; };
+    void setDataEmprestimo(std::chrono::system_clock::time_point data_emprestimo) { this->dataInicio = data_emprestimo; };
+    std::chrono::system_clock::time_point getDataDevolucao() const { return dataFim; };
+    void setDataDevolucao(std::chrono::system_clock::time_point data_devolucao) { this->dataFim = data_devolucao; };
+    StatusEmprestimo getStatus() const { return status; };
+    void setStatus(StatusEmprestimo status) { this->status = status; };
 };
 
 #endif // EMPRESTIMO_H
