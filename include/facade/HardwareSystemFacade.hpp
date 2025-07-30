@@ -1,23 +1,33 @@
-#ifndef HARDWARE_SYSTEM_FACADE_H
-#define HARDWARE_SYSTEM_FACADE_H
+#pragma once
+#include "../hardware/TrancaDigital.hpp"
+#include "../hardware/Display.hpp"
+#include "../hardware/SensorRFID.hpp"
+#include "../hardware/SensorPorta.hpp"
+#include <memory>
 
-#include "../service/ArmarioService.hpp"
-#include "../service/SessionService.hpp"
-#include "../service/RFIDService.hpp"
-
-#include <string>
-
-class WebSystemFacade
+class HardwareSystemFacade
 {
 private:
-  ArmarioService *armarioService;
-  SessionService *sessionService;
-  RFIDService *rfidService;
+  std::unique_ptr<TrancaDigital> tranca;
+  std::unique_ptr<Display> display;
+  std::unique_ptr<SensorRFID> sensorRFID;
+  std::unique_ptr<SensorPorta> sensorPorta;
 
 public:
-  void liberarArmario(int armarioId, const std::string &matricula, const std::string senha);
-  void processarEventosRFID();
-  void finalizarUsoArmario(int armarioId);
-};
+  HardwareSystemFacade(std::unique_ptr<TrancaDigital> tranca,
+                       std::unique_ptr<Display> display,
+                       std::unique_ptr<SensorRFID> sensorRFID,
+                       std::unique_ptr<SensorPorta> sensorPorta);
 
-#endif // WEB_SYSTEM_FACADE_H
+  void travarArmario();
+  void destravarArmario();
+  bool isArmarioTravado() const;
+  void mostrarMensagemDisplay(const std::string &mensagem);
+  std::string lerInputDisplay();
+  void limparDisplay();
+  std::vector<std::string> lerTagsLivros();
+  bool verificarTagPresente(const std::string &tag);
+  bool isPortaAberta() const;
+  bool autenticarUsuario();
+  void registrarLivrosRetirados();
+};

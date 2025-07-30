@@ -1,22 +1,22 @@
-#ifndef COMANDO_EMPRESTAR_HPP
-#define COMANDO_EMPRESTAR_HPP
-
-#include <string>
+#pragma once
 #include "Comando.hpp"
-#include "../entidades/Usuario.hpp"
-#include "../entidades/Livro.hpp"
-#include "../service/BibliotecaService.hpp"
+#include "../service/EmprestimoService.hpp"
 
 class ComandoEmprestarLivro : public Comando
 {
-public:
-  void executar() override;
-  std::string getNome() const override { return "Emprestar"; };
-
 private:
-  Livro *livro;
-  Usuario *usuario;
-  BibliotecaService *servico;
-};
+  EmprestimoService *emprestimoService;
+  int livroId;
+  int usuarioId;
+  int armarioId;
+  bool emprestimoRealizado;
 
-#endif
+public:
+  ComandoEmprestarLivro(EmprestimoService *emprestimoService,
+                        int livroId,
+                        int usuarioId,
+                        int armarioId);
+
+  void executar() override;
+  bool desfazer();
+};

@@ -1,22 +1,19 @@
-#ifndef COMANDO_DEVOLVER_HPP
-#define COMANDO_DEVOLVER_HPP
-
-#include <string>
+#pragma once
 #include "Comando.hpp"
-#include "../entidades/Usuario.hpp"
-#include "../entidades/Livro.hpp"
-#include "../service/BibliotecaService.hpp"
+#include "../service/EmprestimoService.hpp"
 
 class ComandoDevolverLivro : public Comando
 {
-public:
-  void executar() override;
-  std::string getNome() const override { return "Devolver"; };
-
 private:
-  Livro *livro;
-  Usuario *usuario;
-  BibliotecaService *servico;
-};
+  EmprestimoService *emprestimoService;
+  int emprestimoId;
+  bool devolvidoComSucesso;
 
-#endif
+public:
+  ComandoDevolverLivro(EmprestimoService *emprestimoService,
+                       int emprestimoId);
+
+  void executar() override;
+
+  bool desfazer();
+};
