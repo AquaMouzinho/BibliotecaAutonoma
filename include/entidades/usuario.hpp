@@ -20,7 +20,7 @@ private:
     std::vector<Emprestimo *> emprestimosAtivos;
     std::vector<Notificacao *> notificacoes;
 
-protected:
+public:
     Usuario(int id, const std::string &matricula, const std::string &nome,
             const std::string &senha_hash, const std::string &role);
 

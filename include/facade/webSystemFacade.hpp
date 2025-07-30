@@ -1,9 +1,9 @@
 #ifndef WEB_SYSTEM_FACADE_H
 #define WEB_SYSTEM_FACADE_H
 
-#include "../web/LivroController.hpp"
-#include "../web/UsuarioController.hpp"
-#include "../web/PermissaoController.hpp"
+#include "../controller/LivroController.hpp"
+#include "../controller/UsuarioController.hpp"
+#include "../controller/PermissaoController.hpp"
 #include <string>
 
 class WebSystemFacade

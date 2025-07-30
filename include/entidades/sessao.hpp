@@ -20,7 +20,7 @@ private:
     Usuario *usuario;
     Armario *armario;
     EstadoSessao *estadoAtual;
-    TipoSessao tipo;
+    std::string tipo;
     std::chrono::system_clock::time_point inicio;
     std::chrono::system_clock::time_point fim;
     int timeout_timer;
@@ -40,8 +40,8 @@ public:
     void setArmario(Armario *armario) { this->armario = armario; };
     EstadoSessao *getEstado() const { return estadoAtual; };
     void setEstado(EstadoSessao *novoEstado) { this->estadoAtual = novoEstado; }
-    TipoSessao getTipo() const { return tipo; };
-    void setTipo(TipoSessao tipo) { this->tipo = tipo; };
+    std::string getTipo() const { return tipo; };
+    void setTipo(std::string tipo) { this->tipo = tipo; };
     std::chrono::system_clock::time_point getDataCriacao() const { return inicio; };
     void setDataCriacao(std::chrono::system_clock::time_point inicio) { this->inicio = inicio; };
     std::chrono::system_clock::time_point getDataFechamento() const { return fim; };
