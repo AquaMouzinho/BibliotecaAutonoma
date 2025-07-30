@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Biblioteca Online</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+div img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ou 'contain', dependendo do que você quiser */
+}
+
+    header {
+      background-color: #19882c;
+      color: white;
+      padding: 1rem 2rem;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+    }
+
+    header input {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: none;
+      width: 300px;
+      font-size: 1rem;
+    }
+
+    main {
+      width: 1100px;
+      display: flex;
+      margin-top: 2rem;
+      position: relative;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .tags {
+      width: 200px;
+      background-color: #ffffff;
+      padding: 1rem;
+      border-right: 1px solid #ccc;
+    }
+
+    .tags h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .tags ul {
+      list-style: none;
+    }
+
+    .tags li {
+      margin-bottom: 0.5rem;
+    }
+
+    .tag {
+      background-color: #e0e0e0;
+      border: none;
+      border-radius: 20px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+
+    .tag:hover {
+      background-color: #b0c4de;
+    }
+
+    .book-list {
+      width: 100%;
+    }
+
+    #bookContainer {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-height: 500px;
+    }
+
+    .book-card {
+      width: 200px;
+      height: 360px;
+			display:flex;
+			justify-content:center;
+			align-items:center;
+			flex-direction:column;
+      background-color: #ffffff;
+      padding: 5px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+      transition: transform 0.2s;
+      margin: 10px;
+    }
+
+    .book-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .book-card h5 {
+      font-size: 1.1rem;
+      margin: 0.5rem 0 0.2rem;
+    }
+
+    .book-card p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .like-button {
+      top: 5px;
+      right: 5px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #888;
+      transition: color 0.2s;
+    }
+
+    .like-button.liked {
+      color: gold;
+    }
+
+    .pagination {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .pagination button {
+      background-color: #e0e0e0;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem 0.9rem;
+      margin: 0 0.3rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .pagination button:hover {
+      background-color: #b0c4de;
+    }
+
+    .pagination .active {
+      background-color: #2b4c7e;
+      color: white;
+    }
+
+.menu-wrapper {
+	top: 1rem;
+	right: 1rem;
+	z-index: 1000;
+}
+
+.menu-button {
+	background-color: gray;
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	font-size: 22px;
+	cursor: pointer;
+}
+
+.dropdown {
+	display: none;
+	position: absolute;
+	right: 0;
+	margin-top: 0.5rem;
+	background-color: #fff;
+	border-radius: 6px;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+	min-width: 180px;
+	overflow: hidden;
+}
+
+.dropdown a {
+	display: block;
+	padding: 12px 16px;
+	color: #333;
+	text-decoration: none;
+	font-size: 0.95rem;
+	border-bottom: 1px solid #eee;
+}
+
+.dropdown a:last-child {
+	border-bottom: none;
+}
+
+.dropdown a:hover {
+	background-color: #f0f0f0;
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>
+Biblioteca autônoma - IFPB
+</h1>
+    <input type="text" id="search" placeholder="Buscar livros...">
+
+		<div class="menu-wrapper">
+			<button class="menu-button" id="toggleMenu">≡</button>
+			<div class="dropdown" id="dropdownMenu">
+				<a href="./manageadmin.html">admin</a>
+				<a href="../index.html">Sair</a>
+			</div>
+		</div>
+  </header>
+
+  <main>
+    <aside class="tags">
+      <h2>Gêneros</h2>
+      <ul>
+        <li><button class="tag" data-genre="Ficção">Ficção</button></li>
+        <li><button class="tag" data-genre="Romance">Romance</button></li>
+        <li><button class="tag" data-genre="Terror">Terror</button></li>
+        <li><button class="tag" data-genre="Suspense">Suspense</button></li>
+        <li><button class="tag" data-genre="História">História</button></li>
+        <li><button class="tag" data-genre="Fantasia">Fantasia</button></li>
+        <li><button class="tag" data-genre="Biografia">Biografia</button></li>
+        <li><button class="tag" data-genre="all">Todos</button></li>
+      </ul>
+    </aside>
+
+    <section class="book-list">
+      <h2>Livros Disponíveis</h2>
+      <div id="bookContainer"></div>
+    </section>
+  </main>
+
+  <div class="pagination"></div>
+
+<script>
+  const livros = [
+
+  {
+    "ID": 1,
+    "isbn": 9780134549897,
+    "autor": "M. Morris Mano, Michael D. Ciletti",
+    "titulo": "Digital Design: With an Introduction to the Verilog HDL, VHDL, and SystemVerilog",
+    "tagRFID": "A1B2C3D4E5F6",
+    "nameebook": "Mano_Ciletti_Digital_Design_6e.pdf",
+    "linkimage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQFIIJUD9moJJ-Y9YempEma9ZE8wuW1NilxLghxTaW5SCeqfsBV"
+  },
+  {
+    "ID": 2,
+    "isbn": 9780128122754,
+    "autor": "David A. Patterson, John L. Hennessy",
+    "titulo": "Computer Organization and Design: The Hardware/Software Interface",
+    "tagRFID": "1234567890AB",
+    "nameebook": "Patterson_Hennessy_Computer_Organization_5e.pdf",
+    "linkimage": "https://m.media-amazon.com/images/I/51aKONCOqaL._UF894,1000_QL80_.jpg"
+  },
+  {
+    "ID": 3,
+    "isbn": 9780128119051,
+    "autor": "John L. Hennessy, David A. Patterson",
+    "titulo": "Computer Architecture: A Quantitative Approach",
+    "tagRFID": "FEDCBA987654",
+    "nameebook": "Hennessy_Patterson_Computer_Architecture_6e.pdf",
+    "linkimage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRUWwn9cADtmNpfaT3Bp4xuqu6Ir2HcM3xUqCkxMOnQMivpeJjV"
+  },
+  {
+    "ID": 4,
+    "isbn": 9780262033848,
+    "autor": "Thomas H. Cormen et al.",
+    "titulo": "Introduction to Algorithms",
+    "tagRFID": "ABCDEF123456",
+    "nameebook": "Cormen_Leiserson_Rivest_Stein_Intro_Algorithms_3e.pdf",
+    "linkimage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTt2IzvhhGk4t-0Kk9YFN_xMKn-oMhpZlJF9BLDg15kq5Nc_v0m"
+  },
+  {
+    "ID": 5,
+    "isbn": 9780201896831,
+    "autor": "Donald E. Knuth",
+    "titulo": "The Art of Computer Programming, Vols. 1-4A",
+    "tagRFID": "654321FEDCBA",
+    "nameebook": "Knuth_TAOCP_Vol1_3e.pdf",
+    "linkimage": "https://books.google.com.bn/books/content?id=56LNfE2QGtYC&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE723TAMURgRhTwEmN63HF7dtkoOjjwg_gIxugDQBNp8eS7cpb_2ha3UkWdMG0cOhwTte2KJ5JX8d3kWe-gXECzkWL0Hvm10-ea-yoiOhxjmiJpfDCT21W5tujb8cR8ooM2ahIZxj"
+  },
+  {
+    "ID": 6,
+    "isbn": 9781133187790,
+    "autor": "Michael Sipser",
+    "titulo": "Introduction to the Theory of Computation",
+    "tagRFID": "1A2B3C4D5E6F",
+    "nameebook": "Sipser_Intro_Theory_Computation_3e.pdf",
+    "linkimage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgjEQ0Kxcc8XZ8mtRfz4Fcf9BGP9wOARQmpiOpJeql8yl_iSAZ"
+  },
+  {
+    "ID": 7,
+    "isbn": 9780133943030,
+    "autor": "Ian Sommerville",
+    "titulo": "Software Engineering",
+    "tagRFID": "F6E5D4C3B2A1",
+    "nameebook": "Sommerville_Software_Engineering_10e.pdf",
+    "linkimage": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSm_ec_x1IyurD_uJBmHZ05lypdsplqVuPYuwsgl0-abNVgCAeB"
+  },
+  {
+    "ID": 10,
+    "isbn": 9781119457521,
+    "autor": "James K. Peckol",
+    "titulo": "Embedded Systems: A Contemporary Design Tool",
+    "tagRFID": "9876543210FE",
+    "nameebook": "Peckol_Embedded_Systems_2e.pdf",
+    "linkimage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6LQU6YrsStapOqlVe0EKovQY_ZX1Er45rzssZbs7JPK3uoQw1"
+  },
+  {
+    "ID": 11,
+    "isbn": 9780131429383,
+    "autor": "Andrew S. Tanenbaum, Albert S. Woodhull",
+    "titulo": "Operating Systems: Design and Implementation",
+    "tagRFID": 1122334455,
+    "nameebook": "Tanenbaum_Woodhull_OS_Design_Implementation_3e.pdf",
+    "linkimage": "https://m.media-amazon.com/images/I/91mvVTYPglL._UF1000,1000_QL80_.jpg"
+  },
+  {
+    "ID": 12,
+    "isbn": 9780132126953,
+    "autor": "Andrew S. Tanenbaum, David J. Wetherall",
+    "titulo": "Computer Networks",
+    "tagRFID": "AABBCCDDEEFF",
+    "nameebook": "Tanenbaum_Wetherall_Computer_Networks_5e.pdf",
+    "linkimage": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcR2Lvv_wCOcPR7m7Sd6bIezcqLF9owDx20NLnaxwA8eENL8bjxI"
+  },
+  {
+    "ID": 13,
+    "isbn": 9780321486813,
+    "autor": "Alfred V. Aho et al.",
+    "titulo": "Compilers: Principles, Techniques, and Tools",
+    "tagRFID": 112233445566,
+    "nameebook": "Aho_Lam_Sethi_Ullman_Compilers_2e.pdf",
+    "linkimage": "https://rukminim2.flixcart.com/image/704/844/xif0q/book/2/r/g/principles-techniques-and-tools-original-imagrhwdxzxyeghw.jpeg?q=90&crop=false"
+  },
+  {
+    "ID": 14,
+    "isbn": 9780134610993,
+    "autor": "Stuart Russell, Peter Norvig",
+    "titulo": "Artificial Intelligence: A Modern Approach",
+    "tagRFID": "778899AABBCC",
+    "nameebook": "Russell_Norvig_AI_Modern_Approach_4e.pdf",
+    "linkimage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTaieIdxAqcWGClF1fDP2HRRgap1p8QRPJkY1yzC8yqAOSegl22"
+  },
+  {
+    "ID": 15,
+    "isbn": 9780262035613,
+    "autor": "Ian Goodfellow, Yoshua Bengio, Aaron Courville",
+    "titulo": "Deep Learning",
+    "tagRFID": "CCDDEEFF0011",
+    "nameebook": "Goodfellow_Bengio_Courville_Deep_Learning_1e.pdf",
+    "linkimage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIwyxXAAXkITO3UOPLOTtAO6MMxKubHrp0gJ0vxqXBmtiiGyed"
+  },
+  {
+    "ID": 16,
+    "isbn": 9780133594140,
+    "autor": "James F. Kurose, Keith W. Ross",
+    "titulo": "Computer Networking: A Top-Down Approach",
+    "tagRFID": "QWERTYUIOP12",
+    "nameebook": "Kurose_Ross_Computer_Networking_7e.pdf",
+    "linkimage": "https://m.media-amazon.com/images/I/51vT3X2tdtL._UF1000,1000_QL80_.jpg"
+  },
+  {
+    "ID": 17,
+    "isbn": 9780078022159,
+    "autor": "Abraham Silberschatz, Henry F. Korth, S. Sudarshan",
+    "titulo": "Database System Concepts",
+    "tagRFID": "ASDFGHJKL987",
+    "nameebook": "Silberschatz_Korth_Sudarshan_Database_Concepts_7e.pdf",
+    "linkimage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQXo-oQ3WgnN5A3sjGQnK8bYmqaPfMmr1QO2ftuFOu9v9yskrqq"
+  },
+  {
+    "ID": 18,
+    "isbn": 9780134444284,
+    "autor": "William Stallings",
+    "titulo": "Cryptography and Network Security: Principles and Practice",
+    "tagRFID": "ZXCVBNM56789",
+    "nameebook": "Stallings_Cryptography_Network_Security_7e.pdf",
+    "linkimage": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTUhn44jzhEGWpuJ15sJMMBtW62Tefx37F1Vb-WnXL-Sp_YW61q"
+  },
+  {
+    "ID": 19,
+    "isbn": 9780321304544,
+    "autor": "Peter Szor",
+    "titulo": "The Art of Computer Virus Research and Defense",
+    "tagRFID": "1Q2W3E4R5T6Y",
+    "nameebook": "Szor_Art_Computer_Virus_Research_1e.pdf",
+    "linkimage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQLj47FMBvP-XaDYchxlLzQBsMXvL30z9D_Qz99XxXXEO0KrFsR"
+  },
+  {
+    "ID": 20,
+    "isbn": 9789048195909,
+    "autor": "Andrew B. Kahng et al.",
+    "titulo": "VLSI Physical Design: From Graph Partitioning to Timing Closure",
+    "tagRFID": "7U8I9O0P1L2K",
+    "nameebook": "Kahng_VLSI_Physical_Design_1e.pdf",
+    "linkimage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTETZTT_2ouB_lgkWeL9I19nJcIJlB4Jx-c2_RiNXAE1Qcshm_q"
+  },
+  {
+    "ID": 21,
+    "isbn": 9781260091991,
+    "autor": "Kenneth H. Rosen",
+    "titulo": "Discrete Mathematics and Its Applications",
+    "tagRFID": "MNBVCXZLKJHG",
+    "nameebook": "Rosen_Discrete_Mathematics_8e.pdf",
+    "linkimage": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSlFt68VIxfvggsaYVSaoen1JkP8nKdTm_XjhBy1pgOcljBjLhl"
+  },
+  {
+    "ID": 22,
+    "isbn": 9781119320913,
+    "autor": "Abraham Silberschatz, Peter B. Galvin, Greg Gagne",
+    "titulo": "Operating System Concepts",
+    "tagRFID": "POIUYTREWQAS",
+    "nameebook": "Silberschatz_Galvin_Gagne_OS_Concepts_10e.pdf",
+    "linkimage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSE5xzN9C0qSC_fPcykylpf09CDzdwi8KEiSeXEUMiOqxFfyDRV"
+  },
+  {
+    "ID": 23,
+    "isbn": 9780132350884,
+    "autor": "Robert C. Martin",
+    "titulo": "Clean Code: A Handbook of Agile Software Craftsmanship",
+    "tagRFID": "2468ACE13579",
+    "nameebook": "Martin_Clean_Code_1e.pdf",
+    "linkimage": "https://m.media-amazon.com/images/I/51E2055ZGUL._UF894,1000_QL80_.jpg " 
+  },
+  {
+    "ID": 24,
+    "isbn": 9780135957059,
+    "autor": "David Thomas, Andrew Hunt",
+    "titulo": "The Pragmatic Programmer: Your Journey to Mastery",
+    "tagRFID": "BDF97531ECA8",
+    "nameebook": "Thomas_Hunt_Pragmatic_Programmer_2e.pdf",
+    "linkimage": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTMtZ-yfjEmVvCvC077zMHDkySemFwXL5mkjCpaEDh7aXUw7BnH"
+  },
+  {
+    "ID": 25,
+    "isbn": 9780735619678,
+    "autor": "Steve McConnell",
+    "titulo": "Code Complete: A Practical Handbook of Software Construction",
+    "tagRFID": "1029384756AF",
+    "nameebook": "McConnell_Code_Complete_2e.pdf",
+    "linkimage": "https://m.media-amazon.com/images/I/71u3kiOB15L._UF894,1000_QL80_.jpg"
+  },
+  {
+    "ID": 26,
+    "isbn": 9780123973375,
+    "autor": "Maurice Herlihy, Nir Shavit",
+    "titulo": "The Art of Multiprocessor Programming",
+    "tagRFID": "BE42D1C3A5F6",
+    "nameebook": "Herlihy_Shavit_Art_Multiprocessor_Programming_1e.pdf",
+    "linkimage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcS9LtqJ4tbP0nI2-wlj7JZVVRlIZ0bak75xnVftGulvtxmZUTaY"
+  },
+  {
+    "ID": 27,
+    "isbn": 9780131103627,
+    "autor": "Brian W. Kernighan, Dennis M. Ritchie",
+    "titulo": "The C Programming Language",
+    "tagRFID": "9A8B7C6D5E4F",
+    "nameebook": "Kernighan_Ritchie_C_Programming_Language_2e.pdf",
+    "linkimage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFdOFRdZ0zFrAIzK0HBfvykveQNQ9c0leiN4mJCUTvzkkIMMW"
+  },
+  {
+    "ID": 28,
+    "isbn": 9780321563842,
+    "autor": "Bjarne Stroustrup",
+    "titulo": "The C++ Programming Language",
+    "tagRFID": "11AA22BB33CC",
+    "nameebook": "Stroustrup_C++_Programming_Language_4e.pdf",
+    "linkimage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToZRif6cjOqML3v2c3k64CjAImRSx_moQr7X3Q6orSDrw00m3i"
+  },
+  {
+    "ID": 29,
+    "isbn": 9780201633610,
+    "autor": "Erich Gamma et al.",
+    "titulo": "Design Patterns: Elements of Reusable Object-Oriented Software",
+    "tagRFID": "DD44EE55FF66",
+    "nameebook": "Gamma_Helm_Johnson_Vlissides_Design_Patterns_1e.pdf",
+    "linkimage": "https://m.media-amazon.com/images/I/81IGFC6oFmL._AC_UF1000,1000_QL80_.jpg"
+  },
+  {
+    "ID": 30,
+    "isbn": 9781449373320,
+    "autor": "Martin Kleppmann",
+    "titulo": "Designing Data-Intensive Applications",
+    "tagRFID": "12AB34CD56EF",
+    "nameebook": "Kleppmann_Designing_Data_Intensive_Apps_1e.pdf",
+    "linkimage": "https://static.fnac-static.com/multimedia/Images/PT/NR/03/7d/11/1146115/1507-1.jpg"
+  }
+  ];
+
+  const livrosPorPagina = 6;
+  let paginaAtual = 1;
+
+  function criarCardLivro(livro) {
+    const card = document.createElement('div');
+    card.className = 'book-card';
+    card.innerHTML = `
+			<div style="width:100%;height:250px;background-color:gray;">
+				<img src="${livro.linkimage}" width="">
+			</div>
+			<div>
+      <h6>${livro.titulo}</h6>
+      <p>${livro.autor}</p>
+			</div>
+    `;
+    return card;
+  }
+
+  function renderizarPagina(pagina) {
+    const container = document.getElementById('bookContainer');
+    container.innerHTML = '';
+    const inicio = (pagina - 1) * livrosPorPagina;
+    const fim = inicio + livrosPorPagina;
+    const livrosPagina = livros.slice(inicio, fim);
+
+    livrosPagina.forEach(livro => {
+      const card = criarCardLivro(livro);
+      container.appendChild(card);
+    });
+
+    atualizarPaginacao();
+  }
+
+  function atualizarPaginacao() {
+    const totalPaginas = Math.ceil(livros.length / livrosPorPagina);
+    const paginacao = document.querySelector('.pagination');
+    paginacao.innerHTML = '';
+
+    const anterior = document.createElement('button');
+    anterior.innerHTML = '&laquo;';
+    anterior.onclick = () => {
+      if (paginaAtual > 1) {
+        paginaAtual--;
+        renderizarPagina(paginaAtual);
+      }
+    };
+    paginacao.appendChild(anterior);
+
+    for (let i = 1; i <= totalPaginas; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.className = 'page-number';
+      if (i === paginaAtual) btn.classList.add('active');
+      btn.onclick = () => {
+        paginaAtual = i;
+        renderizarPagina(paginaAtual);
+      };
+      paginacao.appendChild(btn);
+    }
+
+    const proximo = document.createElement('button');
+    proximo.innerHTML = '&raquo;';
+    proximo.onclick = () => {
+      if (paginaAtual < totalPaginas) {
+        paginaAtual++;
+        renderizarPagina(paginaAtual);
+      }
+    };
+    paginacao.appendChild(proximo);
+  }
+
+  function toggleLike(button) {
+    button.classList.toggle('liked');
+    button.textContent = button.classList.contains('liked') ? '★' : '☆';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderizarPagina(paginaAtual);
+  });
+
+
+	const toggleButton = document.getElementById('toggleMenu');
+	const dropdownMenu = document.getElementById('dropdownMenu');
+	toggleButton.addEventListener('click', () => {
+		dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+	});
+	document.addEventListener('click', (e) => {
+		if (!toggleButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+			dropdownMenu.style.display = 'none';
+		}
+	});
+
+
+</script>
+</body>
+</html>

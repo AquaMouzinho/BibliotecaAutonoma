@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Postar Livro - Biblioteca Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #0A5517;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .form-container {
+      background-color: #fff;
+      margin-top: 5%;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      color: #444;
+      font-size: 0.95rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Postar Novo Livro</h2>
+    <form id="livroForm">
+      <label for="isbn">ISBN</label>
+      <input type="text" id="isbn" name="isbn" placeholder="Digite o ISBN" required>
+
+      <label for="autor">Autor</label>
+      <input type="text" id="autor" name="autor" placeholder="Nome do autor" required>
+
+      <label for="titulo">Título</label>
+      <input type="text" id="titulo" name="titulo" placeholder="Título do livro" required>
+
+      <label for="tagRFID">Tag RFID</label>
+      <input type="text" id="tagRFID" name="tagRFID" placeholder="Código RFID" required>
+
+      <label for="nameebook">Nome do Arquivo (eBook)</label>
+      <input type="text" id="nameebook" name="nameebook" placeholder="ex: livro.pdf" required>
+
+      <label for="linkimage">Link da Imagem</label>
+      <input type="url" id="linkimage" name="linkimage" placeholder="URL da capa do livro" required>
+
+      <button type="submit">Postar Livro</button>
+    </form>
+  </div>
+  <script>
+    document.getElementById("livroForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const dados = {
+        isbn:      document.getElementById("isbn").value.trim(),
+        autor:     document.getElementById("autor").value.trim(),
+        titulo:    document.getElementById("titulo").value.trim(),
+        tagRFID:   document.getElementById("tagRFID").value.trim(),
+        nameebook: document.getElementById("nameebook").value.trim(),
+        linkimage: document.getElementById("linkimage").value.trim()
+      };
+      console.log("Dados enviados:", dados);
+
+      // Aqui você pode fazer um envio para o backend, por exemplo:
+      /*
+      fetch('/api/livros', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      })
+      .then(response => response.json())
+      .then(result => console.log('Sucesso:', result))
+      .catch(error => console.error('Erro:', error));
+      */
+
+      alert("Livro enviado com sucesso!");
+      this.reset();
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Administração - Biblioteca</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+    }
+
+    header {
+      background-color: #19882c;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    main {
+      padding: 2rem;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section h2 {
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.8rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+
+    .actions button {
+      margin-right: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .edit-btn {
+      background-color: #ffc107;
+      color: #fff;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    .view-btn {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      top: 0; left: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mmodal-content {
+			position:center;
+
+      background: white;
+      text-align: center;
+    }
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+  text-align: center;
+  z-index: 1000;
+}
+    .modal-content p {
+      margin-bottom: 1.5rem;
+    }
+
+    .mmodal-content p {
+      margin-bottom: 1.5rem;
+    }
+    .modal-content button {
+      padding: 0.5rem 1rem;
+      margin: 0 0.5rem;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+  .mmodal-content button {
+      padding: 0.5rem 1rem;
+      margin: 0 0.5rem;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .confirm-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .cancel-btn {
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>
+Biblioteca autônoma - IFPB
+</h1>
+    <span>Admin: admin@gmail.com</span>
+    <div class="mmodal-content" style="background-color:#19882c;">
+			<a href="./pageadmin.html">
+       <button class="confirm-btn" id="confirmDelete">Voltar</button>
+			</a>
+			<a href="./postadmin.html">
+       <button class="confirm-btn" id="confirmDelete" style="background-color:green;">Adicionar livro</button>
+			</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="section">
+      <h2>Todos os Livros</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>ISBN</th>
+            <th>RFID</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="livrosTable">
+          <!-- Livros são inseridos aqui pelo JS -->
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <h2>Livros Recentes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Adicionado em</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="recentesTable">
+          <!-- Livros recentes inseridos aqui -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+  <!-- Modal de confirmação -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <p>Tem certeza que deseja excluir este livro?</p>
+      <button class="confirm-btn" id="confirmDelete">Sim, excluir</button>
+      <button class="cancel-btn" id="cancelDelete">Cancelar</button>
+    </div>
+  </div>
+  <script>
+    const livros = [
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "Dom Casmurro", autor: "Machado de Assis", isbn: "123456", rfid: "RFID001", data: "2025-07-28" },
+      { titulo: "O Cortiço", autor: "Aluísio Azevedo", isbn: "654321", rfid: "RFID002", data: "2025-07-25" }
+    ];
+
+    const recentes = [
+      { titulo: "O Cortiço", autor: "Aluísio Azevedo", data: "2025-07-25" }
+    ];
+
+    const livrosTable = document.getElementById('livrosTable');
+    const recentesTable = document.getElementById('recentesTable');
+    const deleteModal = document.getElementById('deleteModal');
+    let livroParaExcluir = null;
+
+    function renderLivros() {
+      livrosTable.innerHTML = "";
+      livros.forEach((livro, index) => {
+        livrosTable.innerHTML += `
+          <tr>
+            <td>${livro.titulo}</td>
+            <td>${livro.autor}</td>
+            <td>${livro.isbn}</td>
+            <td>${livro.rfid}</td>
+            <td class="actions">
+              <button class="edit-btn">Editar</button>
+              <button class="delete-btn" onclick="confirmarExclusao(${index})">Excluir</button>
+              <button class="view-btn">Ver</button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    function renderRecentes() {
+      recentesTable.innerHTML = "";
+      recentes.forEach(livro => {
+        recentesTable.innerHTML += `
+          <tr>
+            <td>${livro.titulo}</td>
+            <td>${livro.autor}</td>
+            <td>${livro.data}</td>
+            <td class="actions">
+              <button class="edit-btn">Editar</button>
+              <button class="delete-btn">Excluir</button>
+              <button class="view-btn">Ver</button>
+            </td>
+          </tr>`;
+      });
+    }
+    function confirmarExclusao(index) {
+      livroParaExcluir = index;
+      deleteModal.style.display = "flex";
+    }
+
+    document.getElementById("confirmDelete").onclick = function () {
+      if (livroParaExcluir !== null) {
+        livros.splice(livroParaExcluir, 1);
+        renderLivros();
+        livroParaExcluir = null;
+      }
+      deleteModal.style.display = "none";
+    }
+
+    document.getElementById("cancelDelete").onclick = function () {
+      livroParaExcluir = null;
+      deleteModal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+      if (event.target === deleteModal) {
+        deleteModal.style.display = "none";
+        livroParaExcluir = null;
+      }
+    }
+
+    // Inicializa as tabelas
+    renderLivros();
+    renderRecentes();
+  </script>
+</body>
+</html>
+
