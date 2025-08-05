@@ -1,23 +1,21 @@
-#ifndef IDATABASE_CONNECTOR_HPP
-#define IDATABASE_CONNECTOR_HPP
-
-#include <libpq-fe.h>
+#pragma once
+#include "../../json.hpp"
 #include <string>
 
-class IDatabaseConnector
-{
+using json = nlohmann::json;
+
+class IDatabaseConnector {
 public:
-  virtual ~IDatabaseConnector() = default;
+    virtual ~IDatabaseConnector() = default;
 
-  virtual void conectar() = 0;
-  virtual void desconectar() = 0;
+    // Operações básicas
+    virtual bool create(const std::string& table, const json& data) = 0;
+    virtual json read(const std::string& table, const json& condition = {}) = 0;
+    virtual bool update(const std::string& table, const json& condition, const json& newData) = 0;
+    virtual bool remove(const std::string& table, const json& condition) = 0;
 
-  virtual PGresult *executarQuery(const std::string &query) = 0;
-  virtual void executarComando(const std::string &query) = 0;
-
-  virtual void iniciarTransacao() = 0;
-  virtual void commit() = 0;
-  virtual void rollback() = 0;
+    // Operações transacionais
+    virtual bool beginTransaction() = 0;
+    virtual bool commit() = 0;
+    virtual bool rollback() = 0;
 };
-
-#endif // IDATABASE_CONNECTOR_HPP

@@ -12,8 +12,7 @@ public:
   void conectar() override;
   void desconectar() override;
 
-  PGresult *executarQuery(const std::string &query) override;
-  void executarComando(const std::string &query) override;
+  bool executarQuery(const std::string &query) override;
 
   void iniciarTransacao() override;
   void commit() override;

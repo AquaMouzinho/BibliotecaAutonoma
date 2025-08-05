@@ -14,10 +14,10 @@ public:
   bool validarSQL(const std::string &sql);
   void registrarLog(const std::string &comando);
 
-  void conectar() override;
-  void desconectar() override;
-  PGresult *executarQuery(const std::string &query) override;
-  void executarComando(const std::string &query) override;
+  // Métodos herdados
+  bool executarQuery(const std::string &query) override;
+  std::vector<std::vector<std::string>> fetchData(const std::string &query) override;
+
   void iniciarTransacao() override;
   void commit() override;
   void rollback() override;
