@@ -1,72 +1,65 @@
 #include <iostream>
 #include <string>
-#include <unistd.h> // Para sleep()
+#include "include/database/DatabaseMock.hpp"
 
-#include "src/hardware/Display.cpp"
-#include "src/hardware/SensorPorta.cpp"
-#include "src/hardware/SensorRFID.cpp"
-#include "src/hardware/TrancaDigital.cpp"
+#include "include/repositorios/LivroRepository.hpp"
+#include "include/repositorios/EmprestimoRepository.hpp"
+#include "include/repositorios/UsuarioRepository.hpp"
+#include "include/repositorios/NotificacaoRepository.hpp"
+#include "include/repositorios/ArmarioRepository.hpp"
+#include "include/repositorios/SessaoRepository.hpp"
 
-int main()
-{
-  Display *display = new DisplayReal();
-  TrancaDigital *tranca = new TrancaDigitalReal();
-  SensorRFID *rfid = new SensorRFIDReal();
-  SensorPorta *sensorPorta = new SensorPortaReal();
+#include "include/service/EmprestimoService.hpp"
+#include "include/service/NotificacaoService.hpp"
+#include "include/service/SessionService.hpp"
+#include "include/service/RFIDService.hpp"
+#include "include/service/ArmarioService.hpp"
+#include "include/service/AutenticacaoService.hpp"
 
-  // Simulação de fluxo básico
-  display->mostrarMensagem("Sistema de Armários Inteligentes");
-  display->mostrarMensagem("Inicializando...");
-  sleep(2);
+#include "include/hardware/SimuladorRFID.hpp"
+#include "include/hardware/SimuladorSensorPorta.hpp"
+#include "include/hardware/SimuladorTrancaDigital.hpp"
+#include "include/hardware/SimuladorArmario.hpp"
 
-  // Teste da tranca
-  display->mostrarMensagem("Testando tranca digital:");
-  display->mostrarMensagem("Destravando armário...");
-  tranca->liberar();
-  display->mostrarMensagem(tranca->estaTrancada() ? "Trancado" : "Destrancado");
-  sleep(1);
+#include "include/facade/HardwareSystemFacade.hpp"
+#include "SimuladorConsole.hpp"
 
-  display->mostrarMensagem("Travando armário...");
-  tranca->bloquear();
-  display->mostrarMensagem(tranca->estaTrancada() ? "Trancado" : "Destrancado");
-  sleep(1);
+int main() {
+    auto db = DatabaseMock::getInstance("db_fake.json");
 
-  // Teste do sensor de porta
-  display->mostrarMensagem("\nTestando sensor de porta:");
-  display->mostrarMensagem(sensorPorta->estaAberta() ? "Porta ABERTA" : "Porta FECHADA");
-  sleep(1);
+    // Inicializa repositórios
+    LivroRepository livroRepo(db);
+    EmprestimoRepository emprestimoRepo(db);
+    UsuarioRepository usuarioRepo(db);
+    NotificacaoRepository notificacaoRepo(db);
+    ArmarioRepository armarioRepo(db);
+    SessaoRepository sessaoRepo(db);
 
-  // Teste do sensor RFID
-  display->mostrarMensagem("\nTestando sensor RFID:");
-  display->mostrarMensagem("Aproxime um livro...");
+    // Inicializa hardware
+    SimuladorRFID sensorRFID(armarioRepo, 1);
+    SimuladorSensorPorta sensorPorta(1);
+    SimuladorTrancaDigital trancaDigital(1);
 
-  int tentativas = 5;
-  while (tentativas--)
-  {
-    auto tags = rfid->lerTags();
-    if (!tags.empty())
-    {
-      display->mostrarMensagem("Livro detectado: " + tags[0]);
-      break;
-    }
-    sleep(1);
-  }
+    // Inicializa serviços
+    NotificacaoService notificacaoService(&notificacaoRepo);
+    EmprestimoService emprestimoService(&emprestimoRepo, &usuarioRepo, &livroRepo, &notificacaoService);
+    AutenticacaoService authService(&usuarioRepo, &emprestimoRepo);
+    ArmarioService armarioService(armarioRepo, livroRepo);
+    SessionService sessionService(&sessaoRepo, &authService, &sensorPorta, &trancaDigital);
+    RFIDService rfidService(&emprestimoService, &sessionService, &armarioService, &sensorRFID, &sensorPorta, 1);
 
-  if (tentativas <= 0)
-  {
-    display->mostrarMensagem("Nenhum livro detectado");
-  }
+    // Inicializa simulador de hardware
+    SimuladorArmario hardwareSimulator(trancaDigital, sensorPorta, sensorRFID);
+    HardwareSystemFacade facade(sessionService, rfidService, hardwareSimulator);
+    
+    // Inicia o simulador de console
+    SimuladorConsole console(
+        facade,
+        usuarioRepo,
+        emprestimoRepo,
+        livroRepo
+    );
 
-  // Encerramento
-  display->mostrarMensagem("\nTeste concluído!");
-  sleep(2);
-  display->limpar();
-
-  // Liberar recursos
-  delete display;
-  delete tranca;
-  delete rfid;
-  delete sensorPorta;
-
-  return 0;
+    console.iniciar();
+    return 0;
 }
