@@ -1,24 +1,47 @@
 #pragma once
-#include "../repository/LivroRepository.hpp"
+#include "../repository/EmprestimoRepository.hpp"
 #include "../repository/UsuarioRepository.hpp"
-#include "../entidades/Livro.hpp"
+#include "../repository/LivroRepository.hpp"
 #include <vector>
+#include <map>
 
-class BibliotecaService
-{
+class BibliotecaService {
 private:
-  LivroRepository *livroRepository;
-  UsuarioRepository *usuarioRepository;
+    EmprestimoRepository& emprestimoRepo;
+    UsuarioRepository& usuarioRepo;
+    LivroRepository& livroRepo;
 
 public:
-  BibliotecaService(LivroRepository *livroRepo,
-                    UsuarioRepository *usuarioRepo);
+    BibliotecaService(EmprestimoRepository& eRepo, 
+                     UsuarioRepository& uRepo,
+                     LivroRepository& lRepo)
+        : emprestimoRepo(eRepo), usuarioRepo(uRepo), livroRepo(lRepo) {}
 
-  bool doarLivro(int usuarioDoadorId, const Livro &livro);
-  bool removerLivro(int livroId);
-  std::vector<Livro> buscarLivrosPorTitulo(const std::string &titulo);
-  std::vector<Livro> buscarLivrosPorAutor(const std::string &autor);
-  std::vector<Livro> listarLivrosDisponiveis();
-  std::vector<Livro> listarLivrosUsuario(int usuarioId);
-  bool associarRFID(int livroId, const std::string &tagRFID);
+    // Relatórios
+    std::map<std::string, int> gerarRelatorioEmprestimosPorUsuario() {
+        std::map<std::string, int> relatorio;
+        auto usuarios = usuarioRepo.listarUsuarios();
+
+        for (const auto& usuario : usuarios) {
+            int count = emprestimoRepo.buscarPorUsuario(usuario.getMatricula()).size();
+            relatorio[usuario.getNome()] = count;
+        }
+
+        return relatorio;
+    }
+
+    // Consultas Combinadas
+    std::vector<Livro> buscarLivrosDisponiveis() {
+        return livroRepo.buscarLivrosDisponiveis();
+    }
+
+    std::vector<Livro> buscarLivrosPorDoador(const std::string& matricula) {
+        return livroRepo.buscarLivrosPorDoador(matricula);
+    }
+
+    // Controle de Disponibilidade
+    bool verificarLivroDisponivel(const std::string& isbn) {
+        auto livro = livroRepo.buscarPorISBN(isbn);
+        return livro && livro->isDisponivel();
+    }
 };

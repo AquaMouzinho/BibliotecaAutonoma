@@ -1,27 +1,28 @@
 #pragma once
-#include "../repository/LivroRepository.hpp"
-#include "../repository/EmprestimoRepository.hpp"
+#include "../repositorios/LivroRepository.hpp"
+#include "../service/EmprestimoService.hpp"
+#include "../service/SessionService.hpp"
+#include "../service/ArmarioService.hpp"
 #include "../hardware/SensorRFID.hpp"
-#include <vector>
-#include <memory>
+#include "../hardware/SensorPorta.hpp"
+#include <string>
 
-class RFIDService
-{
+class RFIDService {
 private:
-  SensorRFID *sensorRFID;
-  LivroRepository *livroRepository;
-  EmprestimoRepository *emprestimoRepository;
-
-  void processarTag(const std::string &tag);
+    EmprestimoService* emprestimoService;
+    SessionService* sessionService;
+    ArmarioService* armarioService;
+    SensorRFID* sensorRFID;
+    SensorPorta* sensorPorta;
+    int armarioIdAtual;
 
 public:
-  RFIDService(SensorRFID *sensor,
-              LivroRepository *livroRepo,
-              EmprestimoRepository *emprestimoRepo);
+    RFIDService(EmprestimoService* emprestimoService, 
+               SessionService* sessionService, ArmarioService* armarioService, SensorRFID* sensorRFID, SensorPorta* sensorPorta, int armarioIdAtual);
 
-  void monitorarTags();
-  std::vector<std::string> lerTagsAtuais();
-  bool associarTagLivro(const std::string &tag, int livroId);
-  bool removerAssociacaoTag(const std::string &tag);
-  int buscarLivroPorTag(const std::string &tag);
+    void processarTag(const std::string& tagRFID);
+    bool livroEstaNoArmario(const std::string& tagRFID) const;
+
+    bool temSessaoFisicaAtiva() const;
+    bool isPortaAberta() const { return sensorPorta->isPortaAberta(); }
 };

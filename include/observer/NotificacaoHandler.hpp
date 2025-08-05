@@ -1,19 +1,15 @@
-// UsuarioObservador.h
 #ifndef NOTIFICACAO_HANDLER_HPP
 #define NOTIFICACAO_HANDLER_HPP
 
-#include <vector>
 #include "Observador.hpp"
-#include "../entidades/Notificacao.hpp"
+#include "../repositorios/NotificacaoRepository.hpp"
 
-class NotificacaoHandler
-{
-private:
-  std::vector<Observador *> observadores;
+class NotificacaoHandler : public Observador {
+    NotificacaoRepository* repository;
 
 public:
-  void adicionarObservador(Observador *o);
-  void enviarNotificacao(const Notificacao &notificacao);
+    explicit NotificacaoHandler(NotificacaoRepository* repo);
+    void atualizar(const std::string& matricula, const std::string& mensagem) override;
 };
 
-#endif // USUARIO_OBSERVADOR_H
+#endif

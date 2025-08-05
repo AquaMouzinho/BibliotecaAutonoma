@@ -1,19 +1,31 @@
 #pragma once
-#include "../repository/UsuarioRepository.hpp"
-#include "../entidades/Usuario.hpp"
+#include "../repositorios/UsuarioRepository.hpp"
+#include "../repositorios/EmprestimoRepository.hpp"
+#include "../strategy/AutenticacaoStrategy.hpp"
+#include "../strategy/AutenticacaoSenha.hpp"
+#include "../model/Usuario.hpp"
 #include <memory>
 
 class AutenticacaoService
 {
 private:
   UsuarioRepository *usuarioRepository;
+  EmprestimoRepository *emprestimoRepository;
+  AutenticacaoStrategy* estrategia;
 
 public:
-  AutenticacaoService(UsuarioRepository *usuarioRepo);
+  AutenticacaoService(UsuarioRepository *usuarioRepo, EmprestimoRepository *emprestimoRepo, AutenticacaoStrategy* estrategia = nullptr) : usuarioRepository(usuarioRepo), emprestimoRepository(emprestimoRepo), estrategia(estrategia) {
+    if (!this->estrategia) {
+      this->estrategia = new AutenticacaoSenha(usuarioRepo);
+    }
+  }
 
-  std::shared_ptr<Usuario> autenticarUsuario(const std::string &matricula, const std::string &senha);
-  bool usuarioPossuiAtrasos(int usuarioId);
-  bool bloquearUsuario(int usuarioId);
-  bool desbloquearUsuario(int usuarioId);
-  bool alterarSenha(int usuarioId, const std::string &senhaAtual, const std::string &novaSenha);
+  void definirEstrategia(AutenticacaoStrategy* novaEstrategia);
+  Usuario* autenticar(const std::string &matricula, const std::string &senha);
+
+  // Métodos adicionais
+  bool verificarAtrasos(const std::string &matricula);
+  bool bloquearUsuario(const std::string &matricula);
+  bool desbloquearUsuario(const std::string &matricula);
+  bool alterarSenha(const std::string &matricula, const std::string &senhaAtual, const std::string &novaSenha);
 };

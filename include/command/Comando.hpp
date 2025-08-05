@@ -1,13 +1,17 @@
 #ifndef COMANDO_HPP
 #define COMANDO_HPP
 
-#include <string>
+#include <memory>
+#include "../model/Emprestimo.hpp"
 
 class Comando
 {
 public:
+  virtual ~Comando() = default;
+
   virtual void executar() = 0;
-  virtual std::string getNome() const = 0;
+  virtual void desfazer() = 0;
+  virtual std::string getMensagem() const = 0;
 };
 
 #endif

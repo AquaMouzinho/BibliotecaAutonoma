@@ -1,18 +1,16 @@
-// UsuarioObservador.h
-#ifndef USUARIO_OBSERVADOR_H
-#define USUARIO_OBSERVADOR_H
+#ifndef USUARIO_OBSERVADOR_HPP
+#define USUARIO_OBSERVADOR_HPP
 
 #include "Observador.hpp"
-#include "../entidades/Usuario.hpp"
+#include "../model/Notificacao.hpp"
+#include "../service/NotificacaoService.hpp"
 
-class UsuarioObservador : public Observador
-{
-private:
-  Usuario *usuario;
+class UsuarioObservador : public Observador {
+    NotificacaoService* notificacaoService;
 
 public:
-  UsuarioObservador(Usuario *usuario);
-  void atualizar(const Notificacao &notificacao) override;
+    explicit UsuarioObservador(NotificacaoService* service);
+    void atualizar(const std::string& matricula, const std::string& mensagem) override;
 };
 
-#endif // USUARIO_OBSERVADOR_H
+#endif

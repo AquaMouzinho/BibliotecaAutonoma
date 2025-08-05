@@ -1,15 +1,19 @@
 #ifndef SUBJECT_HPP
 #define SUBJECT_HPP
 
-#include <string>
 #include "Observador.hpp"
-#include "../entidades/Notificacao.hpp"
+#include <vector>
+#include <memory>
 
-class Subject
-{
+class Subject {
+protected:
+    std::vector<Observador*> observadores;
+
 public:
-  virtual void registrarObservador(Observador *o) = 0;
-  virtual void notificar(const Notificacao &notificacao) = 0;
+    virtual ~Subject() = default;
+    void adicionarObservador(Observador* observador);
+    void removerObservador(Observador* observador);
+    void notificarObservadores(const std::string& matricula, const std::string& mensagem);
 };
 
 #endif

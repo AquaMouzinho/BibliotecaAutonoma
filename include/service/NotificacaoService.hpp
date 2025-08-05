@@ -1,23 +1,22 @@
-#pragma once
-#include "../repository/NotificacaoRepository.hpp"
-#include "../repository/UsuarioRepository.hpp"
-#include "../entidades/Notificacao.hpp"
+#ifndef NOTIFICACAO_SERVICE_HPP
+#define NOTIFICACAO_SERVICE_HPP
+
+#include "../observer/Subject.hpp"
+#include "../observer/NotificacaoHandler.hpp"
+#include "../repositorios/NotificacaoRepository.hpp"
 #include <vector>
 
-class NotificacaoService
-{
+class NotificacaoService : public Subject {
 private:
-  NotificacaoRepository *notificacaoRepository;
-  UsuarioRepository *usuarioRepository;
+    NotificacaoRepository* repository;
 
 public:
-  NotificacaoService(NotificacaoRepository *notifRepo,
-                     UsuarioRepository *usuarioRepo);
+    explicit NotificacaoService(NotificacaoRepository* repo);
 
-  bool enviarNotificacao(int usuarioId, const std::string &mensagem);
-  bool marcarComoLida(int notificacaoId);
-  std::vector<Notificacao> listarNotificacoesUsuario(int usuarioId, bool apenasNaoLidas = false);
-  bool removerNotificacao(int notificacaoId);
-  int enviarNotificacaoLote(const std::vector<int> &usuariosIds, const std::string &mensagem);
-  void notificarAtrasos();
+    void notificar(const std::string& matricula, const std::string& mensagem);
+    std::vector<Notificacao> buscarNotificacoes(const std::string& matricula) const;
+    void marcarComoLida(const std::string& matricula, int notificacaoId);
+    void limparNotificacoes(const std::string& matricula);
 };
+
+#endif

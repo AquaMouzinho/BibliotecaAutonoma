@@ -1,8 +1,8 @@
 #pragma once
 
-class SensorPorta
-{
+class SensorPorta {
 public:
-  virtual ~SensorPorta() = default;
-  virtual bool estaAberta() const = 0;
+    virtual ~SensorPorta() = default;
+    virtual bool isPortaAberta() const = 0;
+    virtual int getArmarioId() const = 0;
 };

@@ -1,28 +1,22 @@
-#pragma once
+#ifndef INVOKER_HPP
+#define INVOKER_HPP
+
 #include "Comando.hpp"
-#include <memory>
-#include <vector>
 #include <stack>
+#include <vector>
 
 class Invoker
 {
 private:
-  std::vector<std::unique_ptr<Comando>> comandos;
-  std::stack<std::unique_ptr<Comando>> historico;
+  std::stack<Comando *> historicoComandos;
+  std::vector<Comando *> comandosEmLote;
 
 public:
-  /// Adiciona um novo comando à fila de execução
-  void adicionarComando(std::unique_ptr<Comando> comando);
-
-  /// Executa todos os comandos na fila
-  bool executarComandos();
-
-  /// Desfaz o último comando executado
-  bool desfazerUltimoComando();
-
-  /// Limpa todos os comandos pendentes
-  void limparComandos();
-
-  /// Verifica se existem comandos a serem desfeitos
-  bool podeDesfazer() const;
+  void executarComando(Comando *comando);
+  void desfazerUltimoComando();
+  void executarEmLote();
+  void adicionarAoLote(Comando *comando);
+  void limparHistorico();
 };
+
+#endif

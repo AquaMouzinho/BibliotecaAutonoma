@@ -1,13 +1,12 @@
-#ifndef OBSERVADOR_H
-#define OBSERVADOR_H
+#ifndef OBSERVADOR_HPP
+#define OBSERVADOR_HPP
 
-#include "../entidades/Notificacao.hpp"
+#include <string>
 
-class Observador
-{
+class Observador {
 public:
-  virtual ~Observador() = default;
-  virtual void atualizar(const Notificacao &notificacao) = 0;
+    virtual ~Observador() = default;
+    virtual void atualizar(const std::string& matricula, const std::string& mensagem) = 0;
 };
 
-#endif // OBSERVADOR_H
+#endif

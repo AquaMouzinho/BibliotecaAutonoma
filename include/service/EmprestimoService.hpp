@@ -1,34 +1,46 @@
-#pragma once
-#include "../repository/EmprestimoRepository.hpp"
-#include "../repository/LivroRepository.hpp"
-#include "../repository/UsuarioRepository.hpp"
-#include "../repository/NotificacaoRepository.hpp"
-#include "../entidades/Emprestimo.hpp"
-#include "../command/ComandoEmprestarLivro.hpp"
-#include "../command/ComandoDevolverLivro.hpp"
+#ifndef EMPRESTIMO_SERVICE_HPP
+#define EMPRESTIMO_SERVICE_HPP
+
+#include "../repositorios/EmprestimoRepository.hpp"
+#include "../repositorios/LivroRepository.hpp"
+#include "../repositorios/UsuarioRepository.hpp"
+#include "../service/NotificacaoService.hpp"
+#include "../command/Invoker.hpp"
+#include "../model/Emprestimo.hpp"
 #include <memory>
 
-class EmprestimoService
-{
+class EmprestimoService {
 private:
-  EmprestimoRepository *emprestimoRepository;
-  LivroRepository *livroRepository;
-  UsuarioRepository *usuarioRepository;
-  NotificacaoRepository *notificacaoRepository;
-
-  void notificarDonoLivro(int livroId, int usuarioEmprestimoId, const std::string &mensagem);
+    EmprestimoRepository* emprestimoRepo;
+    UsuarioRepository* usuarioRepo;
+    LivroRepository* livroRepo;
+    NotificacaoService* notificacaoService;
+    Invoker* invoker;
 
 public:
-  EmprestimoService(EmprestimoRepository *emprestimoRepo,
-                    LivroRepository *livroRepo,
-                    UsuarioRepository *usuarioRepo,
-                    NotificacaoRepository *notifRepo);
+  explicit EmprestimoService(EmprestimoRepository* emprestimoRepo, UsuarioRepository* usuarioRepo, LivroRepository* livroRepo, NotificacaoService* notificacaoService);
 
-  bool realizarEmprestimo(int livroId, int usuarioId, int armarioId);
-  bool registrarDevolucao(int emprestimoId);
-  bool renovarEmprestimo(int emprestimoId, int diasAdicionais);
-  std::vector<Emprestimo> consultarHistoricoUsuario(int usuarioId);
-  std::vector<Emprestimo> listarEmprestimosAtivos();
-  std::vector<Emprestimo> listarEmprestimosAtrasados();
-  bool verificarDisponibilidadeLivro(int livroId);
+  // Métodos principais
+  bool criarEmprestimo(const std::string& matricula, const std::string& tagRFID);
+  bool encerrarEmprestimo(int emprestimoId);
+
+  // Interface para os comandos
+  bool executarCriacaoEmprestimo(const std::string& matricula, const std::string& tagRFID);
+  bool executarEncerramentoEmprestimo(int emprestimoId);
+
+  // Controle de comandos
+  void emprestarLivro(const std::string& matricula, const std::string& tagRFID);
+  void devolverLivro(const std::string& tagRFID);
+  void desfazerUltimaOperacao();
+
+  // Consultas
+  Emprestimo buscarEmprestimoAtivoPorTag(const std::string& tagRFID) const;
+  std::vector<Emprestimo> buscarEmprestimosAtivosPorUsuario(const std::string& matricula) const;
+
+  void notificarDonoLivro(const std::string& tagRFID, const std::string& mensagem);
+
+  void setNotificacaoService(NotificacaoService* service){ this->notificacaoService = service; }
+    
 };
+
+#endif
