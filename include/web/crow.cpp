@@ -50,34 +50,43 @@ int main() {
 
     CROW_ROUTE(app, "/login").methods("POST"_method)([](const crow::request& req){
     	
-	// Extrai os dados do corpo da requisição
+        // Extrai os dados do corpo da requisição
     	auto body = crow::query_string(req.body);
+   	 std::string str = req.body;
 
-    	std::string email = body.get("email") ? body.get("email") : "user";
-    	std::string senha = body.get("senha") ? body.get("senha") : "user";
+    	// Encontra a posição dos sinais de igual e "e" comercial
+    	size_t posMatricula = str.find("matricula=");
+    	size_t posSenha = str.find("&senha=");
 
+    	std::string matricula, senha;
+    	if (posMatricula != std::string::npos && posSenha != std::string::npos) {
+        	// Extrai a matrícula entre "matricula=" e "&"
+        	matricula = str.substr(posMatricula + 10, posSenha - (posMatricula + 10));
+     		// Extrai a senha depois de "&senha="
+        	senha = str.substr(posSenha + 7);
+    	} else {
+        	std::cout << "Formato inválido\n";
+    	}
     	crow::response res;
-
+	
     	// Validar login se é admin.
-    	if (email == "admin" && senha == "admin") {
+    	if (matricula == "admin" && senha == "admin") {
         	// Redireciona se estiver certo
         	res.code = 303;
         	res.set_header("Location", "/admin/pageadmin");
         	return res;
     	} 
-    	// Validar login se é admin.
-    	else if(email == "user" && senha == "user"){
+    	// Validar login se é user.
+    	else if(matricula == "user" && senha == "user"){
     		res.code = 303;
     		res.set_header("Location", "/user/user");
     		return res;
-
     	}
     	else {
        		// Resposta com erro simples
        		return crow::response(401, "Login inválido");
     	}
    });
-
 
     // Porta e execução
     app.port(18080).multithreaded().run();
