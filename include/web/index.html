@@ -53,31 +53,15 @@
 <body>
   <div class="login-box">
 		<h1 style="text-align: center;">IFPB</h1>
-    <form id="loginForm">
+    <form id="loginForm" action="/login" method="POST">
       <label for="email">Usuário</label>
-      <input type="email" id="email" name="email" placeholder="Matricula" required>
+      <input type="text" id="email" name="email" placeholder="Matricula" required>
       <label for="senha">Senha</label>
       <input type="password" id="senha" name="senha" placeholder="********" required>
       <button type="submit">Entrar</button>
     </form>
     <div class="footer">© 2025 Biblioteca | Desenvolvimento: IFPB </div>
   </div>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("loginForm");
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const email = document.getElementById("email").value.trim();
-        const senha = document.getElementById("senha").value.trim();
-        if (email === "admin@gmail.com" && senha === "admin") {
-          window.location.href = "./admin/pageadmin.html";
-        }
-        if (email === "user@gmail.com" && senha === "user") {
-          window.location.href = "./user/user.html";
-        }
-      });
-    });
-  </script>
 </body>
 </html>
 
