@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
-#include "include/database/DatabaseMock.hpp"
+
+#include "include/database/DatabaseConnectorProxy.hpp"
 
 #include "include/repositorios/LivroRepository.hpp"
 #include "include/repositorios/EmprestimoRepository.hpp"
@@ -24,16 +25,17 @@
 #include "include/facade/HardwareSystemFacade.hpp"
 #include "SimuladorConsole.hpp"
 
-int main() {
-    auto db = DatabaseMock::getInstance("db_fake.json");
+int main()
+{
+    DatabaseConnectorProxy db("test");
 
     // Inicializa repositórios
-    LivroRepository livroRepo(db);
-    EmprestimoRepository emprestimoRepo(db);
-    UsuarioRepository usuarioRepo(db);
-    NotificacaoRepository notificacaoRepo(db);
-    ArmarioRepository armarioRepo(db);
-    SessaoRepository sessaoRepo(db);
+    LivroRepository livroRepo(&db);
+    EmprestimoRepository emprestimoRepo(&db);
+    UsuarioRepository usuarioRepo(&db);
+    NotificacaoRepository notificacaoRepo(&db);
+    ArmarioRepository armarioRepo(&db);
+    SessaoRepository sessaoRepo(&db);
 
     // Inicializa hardware
     SimuladorRFID sensorRFID(armarioRepo, 1);
@@ -51,14 +53,13 @@ int main() {
     // Inicializa simulador de hardware
     SimuladorArmario hardwareSimulator(trancaDigital, sensorPorta, sensorRFID);
     HardwareSystemFacade facade(sessionService, rfidService, hardwareSimulator);
-    
+
     // Inicia o simulador de console
     SimuladorConsole console(
         facade,
         usuarioRepo,
         emprestimoRepo,
-        livroRepo
-    );
+        livroRepo);
 
     console.iniciar();
     return 0;

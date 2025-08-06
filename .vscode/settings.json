@@ -108,6 +108,9 @@
     "ctime": "cpp",
     "ratio": "cpp",
     "optional": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "map": "cpp",
+    "iomanip": "cpp",
+    "cinttypes": "cpp"
   }
 }
