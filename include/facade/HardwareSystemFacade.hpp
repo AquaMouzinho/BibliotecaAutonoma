@@ -1,5 +1,6 @@
 #pragma once
 #include "../service/SessionService.hpp"
+#include "../service/EmprestimoService.hpp"
 #include "../service/RFIDService.hpp"
 #include "../hardware/SimuladorArmario.hpp"
 #include "../repositorios/LivroRepository.hpp"
@@ -15,15 +16,18 @@ private:
     SessionService &sessionService;
     RFIDService &rfidService;
     SimuladorArmario &hardwareSimulator;
+    EmprestimoService &emprestimoService;
     std::atomic<bool> emOperacao;
 
 public:
     HardwareSystemFacade(SessionService &session,
                          RFIDService &rfid,
-                         SimuladorArmario &simulator)
+                         SimuladorArmario &simulator,
+                         EmprestimoService &emprestimo)
         : sessionService(session),
           rfidService(rfid),
           hardwareSimulator(simulator),
+          emprestimoService(emprestimo),
           emOperacao(false) {}
 
     // Controle de Sessão Física
@@ -36,7 +40,6 @@ public:
         if (sucesso)
         {
             std::cout << "Sessão iniciada com sucesso" << std::endl;
-            hardwareSimulator.liberarTranca();
             emOperacao = true;
             monitorarOperacao();
         }
@@ -57,16 +60,16 @@ public:
                     {
             while (emOperacao) {
                 // Verifica timeout
-                if (sessionService.verificarTimeout()) {
+                if (!sessionService.temSessaoAtiva()) {
                     this->encerrarSessao();
                     break;
                 }
 
                 // Atualiza estado dos livros
-                auto tags = hardwareSimulator.lerTags();
-                for (const auto& tag : tags) {
-                    rfidService.processarTag(tag);
-                }
+                //auto tags = hardwareSimulator.lerTags();
+                //for (const auto& tag : tags) {
+                    //rfidService.processarTag(tag);
+                //}
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
             } })
@@ -92,4 +95,5 @@ public:
     SimuladorArmario &getSimulador() { return hardwareSimulator; }
     SessionService &getSessionService() { return sessionService; }
     RFIDService &getRFIDService() { return rfidService; }
+    EmprestimoService &getEmprestimoService() { return emprestimoService; }
 };
