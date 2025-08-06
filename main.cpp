@@ -27,40 +27,60 @@
 
 int main()
 {
-    DatabaseConnectorProxy db("test");
+    // 1. Inicialização do Database
+    auto db = std::make_shared<DatabaseConnectorProxy>("test");
 
-    // Inicializa repositórios
-    LivroRepository livroRepo(&db);
-    EmprestimoRepository emprestimoRepo(&db);
-    UsuarioRepository usuarioRepo(&db);
-    NotificacaoRepository notificacaoRepo(&db);
-    ArmarioRepository armarioRepo(&db);
-    SessaoRepository sessaoRepo(&db);
+    // 2. Inicialização dos repositórios
+    LivroRepository livroRepo(db.get());
+    EmprestimoRepository emprestimoRepo(db.get());
+    UsuarioRepository usuarioRepo(db.get());
+    NotificacaoRepository notificacaoRepo(db.get());
+    ArmarioRepository armarioRepo(db.get());
+    SessaoRepository sessaoRepo(db.get());
 
-    // Inicializa hardware
-    SimuladorRFID sensorRFID(armarioRepo, 1);
-    SimuladorSensorPorta sensorPorta(1);
-    SimuladorTrancaDigital trancaDigital(1);
+    // 3. Inicialização do hardware simulado
+    auto sensorRFID = std::make_shared<SimuladorRFID>(armarioRepo, 1);
+    auto sensorPorta = std::make_shared<SimuladorSensorPorta>(1);
+    auto trancaDigital = std::make_shared<SimuladorTrancaDigital>(1);
+    auto hardwareSimulator = std::make_shared<SimuladorArmario>(*trancaDigital, *sensorPorta, *sensorRFID);
 
-    // Inicializa serviços
+    // 4. Inicialização dos serviços
     NotificacaoService notificacaoService(&notificacaoRepo);
     EmprestimoService emprestimoService(&emprestimoRepo, &usuarioRepo, &livroRepo, &notificacaoService);
     AutenticacaoService authService(&usuarioRepo, &emprestimoRepo);
     ArmarioService armarioService(armarioRepo, livroRepo);
-    SessionService sessionService(&sessaoRepo, &authService, &sensorPorta, &trancaDigital);
-    RFIDService rfidService(&emprestimoService, &sessionService, &armarioService, &sensorRFID, &sensorPorta, 1);
 
-    // Inicializa simulador de hardware
-    SimuladorArmario hardwareSimulator(trancaDigital, sensorPorta, sensorRFID);
-    HardwareSystemFacade facade(sessionService, rfidService, hardwareSimulator);
+    // Corrigindo a inicialização do SessionService
+    SessionService sessionService(
+        &sessaoRepo,
+        &authService,
+        sensorPorta.get(),
+        trancaDigital.get());
 
-    // Inicia o simulador de console
+    // Corrigindo a inicialização do RFIDService
+    RFIDService rfidService(
+        &emprestimoService,
+        &sessionService,
+        &armarioService,
+        sensorRFID.get(),
+        sensorPorta.get(),
+        1 // ID do armário
+    );
+
+    // 5. Inicialização da fachada
+    HardwareSystemFacade hardwareFacade(
+        sessionService,
+        rfidService,
+        *hardwareSimulator);
+
+    // 6. Inicialização do console
     SimuladorConsole console(
-        facade,
+        hardwareFacade,
         usuarioRepo,
         emprestimoRepo,
         livroRepo);
 
     console.iniciar();
+
     return 0;
 }

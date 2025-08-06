@@ -5,6 +5,7 @@
 #include "include/repositorios/LivroRepository.hpp"
 #include <iostream>
 #include <limits>
+#include <thread>
 
 class SimuladorConsole
 {
@@ -26,7 +27,6 @@ private:
 
         do
         {
-            // system("clear || cls");
             std::cout << "\n=== AUTENTICAÇÃO ===\n";
             std::cout << "Matrícula: ";
             std::getline(std::cin, matricula);
@@ -35,13 +35,11 @@ private:
 
             if (hardwareFacade.iniciarSessao(1, matricula, senha))
             {
-                hardwareFacade.monitorarOperacao();
                 break;
             }
             else
             {
                 std::cout << "\nFalha na autenticação! Tente novamente.\n";
-                std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         } while (true);
     }
@@ -51,7 +49,6 @@ private:
         int escolha;
         do
         {
-            // system("clear || cls");
             std::cout << "\n=== MENU PRINCIPAL ===\n";
             std::cout << "Armário: " << (hardwareFacade.isTrancado() ? "Trancado" : "Liberado") << "\n";
             std::cout << "Porta: " << (hardwareFacade.isPortaAberta() ? "Aberta" : "Fechada") << "\n";
@@ -71,7 +68,7 @@ private:
 
             std::cout << "Escolha: ";
             std::cin >> escolha;
-            limparBuffer();
+            limparBuffer(); // Importante limpar o buffer após ler números
 
             switch (escolha)
             {
@@ -91,14 +88,17 @@ private:
             case 3:
                 if (hardwareFacade.isPortaAberta())
                     menuEmprestimo();
+                else
+                    std::cout << "Opção inválida!\n";
                 break;
             case 4:
                 if (hardwareFacade.isPortaAberta())
                     menuDevolucao();
+                else
+                    std::cout << "Opção inválida!\n";
                 break;
             default:
                 std::cout << "Opção inválida!\n";
-                std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         } while (true);
     }
@@ -116,19 +116,27 @@ private:
         int escolha;
         do
         {
-            // system("clear || cls");
-            std::cout << "=== EMPRÉSTIMO ===\n";
+            std::cout << "\n=== EMPRÉSTIMO ===\n";
             std::cout << "Livros no armário:\n";
 
             for (int i = 0; i < livros.size(); i++)
             {
                 auto livro = livroRepo.buscarPorRfid(livros[i]);
-                std::cout << i + 1 << ". " << livro->getTitulo() << " (" << livros[i] << ")\n";
+                if (livro)
+                {
+                    std::cout << i + 1 << ". " << livro->getTitulo() << " (" << livros[i] << ")\n";
+                }
             }
 
             std::cout << "\n0. Voltar\n";
             std::cout << "Escolha o livro para emprestar: ";
-            std::cin >> escolha;
+
+            if (!(std::cin >> escolha))
+            {
+                limparBuffer();
+                std::cout << "Entrada inválida!\n";
+                continue;
+            }
             limparBuffer();
 
             if (escolha == 0)
@@ -136,26 +144,28 @@ private:
 
             if (escolha > 0 && escolha <= livros.size())
             {
-                // std::cout << "Escolha: "<< livros[escolha-1] << "\n";
                 hardwareFacade.getRFIDService().processarTag(livros[escolha - 1]);
-
+                std::cout << "Empréstimo realizado para: " << livros[escolha - 1] << "\n";
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 return;
             }
 
             std::cout << "Opção inválida!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
         } while (true);
     }
 
     void menuDevolucao()
     {
-        std::cout << "=== DEVOLUÇÃO ===\n";
         auto usuario = usuarioRepo.buscarUsuarioPorMatricula(
             hardwareFacade.getSessionService().getSessaoAtual()->getUsuarioMatricula());
 
-        auto emprestimos = emprestimoRepo.buscarPorUsuario(usuario->getMatricula());
+        if (!usuario)
+        {
+            std::cout << "Usuário não encontrado!\n";
+            return;
+        }
 
+        auto emprestimos = emprestimoRepo.buscarPorUsuario(usuario->getMatricula());
         if (emprestimos.empty())
         {
             std::cout << "Nenhum empréstimo ativo!\n";
@@ -166,20 +176,28 @@ private:
         int escolha;
         do
         {
-            // system("clear || cls");
-            std::cout << "=== DEVOLUÇÃO ===\n";
+            std::cout << "\n=== DEVOLUÇÃO ===\n";
             std::cout << "Seus empréstimos ativos:\n";
 
             for (int i = 0; i < emprestimos.size(); i++)
             {
                 auto livro = livroRepo.buscarPorISBN(emprestimos[i].getLivroIsbn());
-                std::cout << i + 1 << ". " << livro->getTitulo() << " (Devolver até: "
-                          << emprestimos[i].getDataDevolucao() << ")\n";
+                if (livro)
+                {
+                    std::cout << i + 1 << ". " << livro->getTitulo()
+                              << " (Devolver até: " << emprestimos[i].getDataDevolucao() << ")\n";
+                }
             }
 
             std::cout << "\n0. Voltar\n";
             std::cout << "Escolha o livro para devolver: ";
-            std::cin >> escolha;
+
+            if (!(std::cin >> escolha))
+            {
+                limparBuffer();
+                std::cout << "Entrada inválida!\n";
+                continue;
+            }
             limparBuffer();
 
             if (escolha == 0)
@@ -187,15 +205,17 @@ private:
 
             if (escolha > 0 && escolha <= emprestimos.size())
             {
-                auto tag = livroRepo.buscarPorISBN(emprestimos[escolha - 1].getLivroIsbn())->getTagRfid();
-                hardwareFacade.getSimulador().simularInsercaoLivro(tag);
-                std::cout << "Devolução realizada com sucesso!\n";
-                std::this_thread::sleep_for(std::chrono::seconds(2));
-                return;
+                auto livro = livroRepo.buscarPorISBN(emprestimos[escolha - 1].getLivroIsbn());
+                if (livro)
+                {
+                    hardwareFacade.getSimulador().simularInsercaoLivro(livro->getTagRfid());
+                    std::cout << "Devolução realizada: " << livro->getTitulo() << "\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                    return;
+                }
             }
 
             std::cout << "Opção inválida!\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
         } while (true);
     }
 
@@ -211,8 +231,16 @@ public:
     {
         while (true)
         {
-            autenticarUsuario();
-            menuPrincipal();
+            try
+            {
+                autenticarUsuario();
+                menuPrincipal();
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Erro: " << e.what() << "\n";
+                hardwareFacade.encerrarSessao();
+            }
         }
     }
 };
